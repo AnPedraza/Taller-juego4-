@@ -2,7 +2,7 @@
 #include <string>
 
 using namespace std;
-// Creacion de codigo//
+//Creacion de codigo//
 // Función para mostrar el tablero
 void mostrarTablero(char tablero[3][3]) {
     cout << "\n  1   2   3" << endl;
