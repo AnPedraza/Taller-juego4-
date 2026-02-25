@@ -3,16 +3,16 @@
 
 
 // Test
-
+//test4//Juego de Tres en Linea (Tic-Tac-Toe) en C++
 using namespace std;
 //Creacion de codigo//
 // Función para mostrar el tablero
 void mostrarTablero(char tablero[3][3]) {
     cout << "\n  1   2   3" << endl;
-    cout << " +---+---+---+" << endl;
+    cout << "  +---+---+---+" << endl;
     for (int i = 0; i < 3; i++) {
         cout << i + 1 << " | " << tablero[i][0] << " | " << tablero[i][1] << " | " << tablero[i][2] << " |" << endl;
-        cout << " +---+---+---+" << endl;
+        cout << "  +---+---+---+" << endl;
     }
 }
 
