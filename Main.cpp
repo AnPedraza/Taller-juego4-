@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
+#include "NodoGeneral.h"
+#include "ArbolGeneral.h"
 
 
-// Test
 //test4//Juego de Tres en Linea (Tic-Tac-Toe) en C++
 using namespace std;
 //Creacion de codigo//
