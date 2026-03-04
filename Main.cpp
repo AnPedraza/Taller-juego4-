@@ -30,7 +30,10 @@ int main() {
         
         // Ciclo principal del juego
         while (true) {
-            mostrarTablero( copiarTableroDinamicamente(tablero) );
+            char** temp = copiarTableroDinamicamente(tablero);
+            mostrarTablero(temp);
+            liberarTablero(temp);
+
             cout << "\nTurno del jugador " << jugadorActual << endl;
             
             if (jugadorActual == 'O') {
@@ -58,23 +61,33 @@ int main() {
             else { 
                 // Turno de la IA
                 ArbolGeneral<T> arbolDeBusqueda;
-                NodoGeneral<T>* raiz = new NodoGeneral<T>;
-                
-                T tableroActual = copiarTableroDinamicamente(tablero); 
 
-                raiz->fijarDato(tableroActual);
+                NodoGeneral<T>* raiz = new NodoGeneral<T>;
+
+                T tableroTemp = copiarTableroDinamicamente(tablero);
+                raiz->fijarDato(tableroTemp);
+
+                liberarTablero(tableroTemp);
+
                 arbolDeBusqueda.fijarRaiz(raiz);
-                
+
                 // Generar espacio de estados desde el turno de la IA
                 funcionSucesor(arbolDeBusqueda.obtenerRaiz(), true);
-                
-                break; 
+
+                // Obtener mejor jugada para la IA
+                std::pair<int,int> mejorJugada = minimaxPodaAlfaBeta(arbolDeBusqueda,true);
+
+                tablero[mejorJugada.first][mejorJugada.second] = 'X';
             }
             
             // Verificar ganador
-            char ganador = verificarGanador( copiarTableroDinamicamente(tablero) );
+            char** tempGanador = copiarTableroDinamicamente(tablero);
+            char ganador = verificarGanador(tempGanador);
+            liberarTablero(tempGanador);
             if (ganador != ' ') {
-                mostrarTablero( copiarTableroDinamicamente(tablero) );
+                char** tempMostrar = copiarTableroDinamicamente(tablero);
+                mostrarTablero(tempMostrar);
+                liberarTablero(tempMostrar);
                 cout << "\n**********************************" << endl;
                 cout << "   FELICIDADES! Jugador " << ganador << " GANA!   " << endl;
                 cout << "**********************************" << endl;
@@ -82,8 +95,14 @@ int main() {
             }
             
             // Verificar empate
-            if (verificarEmpate( copiarTableroDinamicamente(tablero) ) ) {
-                mostrarTablero( copiarTableroDinamicamente(tablero) );
+            char** tempEmpate = copiarTableroDinamicamente(tablero);
+            bool empate = verificarEmpate(tempEmpate);
+            liberarTablero(tempEmpate);
+
+            if(empate){
+                char** tempMostrar = copiarTableroDinamicamente(tablero);
+                mostrarTablero(tempMostrar);
+                liberarTablero(tempMostrar);
                 cout << "\n**********************************" << endl;
                 cout << "         ES UN EMPATE!            " << endl;
                 cout << "**********************************" << endl;

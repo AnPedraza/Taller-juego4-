@@ -14,6 +14,7 @@ void mostrarTablero(char** tablero);
 char verificarGanador(char** tablero);
 bool verificarEmpate(char** tablero);
 char** copiarTableroDinamicamente(char tablero[3][3]);
+void liberarTablero(char** tablero);
 
 template< class T >
 void funcionSucesor(NodoGeneral<T>* tableroActual, bool turno);
@@ -22,6 +23,15 @@ template< class T >
 vector< pair<int,int> > obtenerJugadas(T tableroActual);
 
 bool pruebaTerminal(char** tablero);
+
+template< class T >
+int funcionUtilidad(T tableroActual);
+
+template<class T>
+int minimaxRecursivo(NodoGeneral<T>* nodo, bool turnoIA, int alfa, int beta);
+
+template< class T >
+std::pair<int,int> minimaxPodaAlfaBeta(ArbolGeneral<T>& arbolDeJuego, bool turnoIA);
 
 #include "funciones.hxx"
 

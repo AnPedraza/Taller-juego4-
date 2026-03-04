@@ -1,17 +1,27 @@
 #include "NodoGeneral.h"
 #include <list>
 
-template< class T >
+template<class T>
 NodoGeneral<T>::NodoGeneral() {
     this->desc.clear();
+    this->dato = nullptr;
 }
 
-template< class T >
+template<class T>
 NodoGeneral<T>::~NodoGeneral() {
-    typename std::list< NodoGeneral<T>* >::iterator it;
-    for (it = this->desc.begin(); it != this->desc.end(); it++)
-        delete *it;
+
+    for (auto hijo : this->desc)
+        delete hijo;
+
     this->desc.clear();
+
+    if (this->dato != nullptr) {
+        for (int i = 0; i < 3; ++i) {
+            delete[] this->dato[i];
+        }
+
+        delete[] this->dato;
+    }
 }
 
 template< class T >
@@ -19,9 +29,25 @@ T& NodoGeneral<T>::obtenerDato() {
     return this->dato;
 }
 
-template< class T >
+template<class T>
 void NodoGeneral<T>::fijarDato(T& val) {
-    this->dato = val;
+    this->dato = new char*[3];
+    for (int i = 0; i < 3; ++i) {
+        this->dato[i] = new char[3];
+        for (int j = 0; j < 3; ++j) {
+            this->dato[i][j] = val[i][j];
+        }
+    }
+}
+
+template< class T >
+void NodoGeneral<T>::fijarJugada(std::pair<int,int> jug){
+    this->jugada = jug;
+}
+
+template< class T >
+std::pair<int,int> NodoGeneral<T>::obtenerJugada(){
+    return this->jugada;
 }
 
 template< class T >
@@ -41,7 +67,8 @@ void NodoGeneral<T>::limpiarLista() {
 
 template< class T >
 void NodoGeneral<T>::adicionarDesc(T& nval) {
-    NodoGeneral<T> *nodo = new NodoGeneral<T>;
+    NodoGeneral<T>* nodo = new NodoGeneral<T>;
+    
     nodo->fijarDato(nval);
     this->desc.push_back(nodo);
 }

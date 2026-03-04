@@ -89,6 +89,13 @@ char** copiarTableroDinamicamente(char tablero[3][3]) {
     return copia;
 }
 
+void liberarTablero(char** tablero){
+    for(int i = 0; i < 3; i++){
+        delete[] tablero[i];
+    }
+    delete[] tablero;
+}
+
 // Función para generar el espacio de estados (Árbol con todos los estados posibles)
 // Si el turno es verdadero significa que juega la IA
 template< class T >
@@ -130,6 +137,7 @@ void funcionSucesor(NodoGeneral<T>* tableroActual, bool turno){
 
         // Obtener el último hijo creado
         NodoGeneral<T>* hijo = tableroActual->obtenerDesc().back();
+        hijo->fijarJugada({fila, columna});
 
         // Llamada recursiva cambiando turno
         funcionSucesor(hijo, !turno);
@@ -161,3 +169,97 @@ vector< pair<int,int> > obtenerJugadas(T tableroActual){
     return false;
  }
 
+// La funcion utilidad da un valor numérico a una configuración final del juego
+// Evalúa el estado desde el punto de vista de la IA ('X')
+template< class T >
+int funcionUtilidad(T tableroActual){
+
+    // Verificar si alguien ganó
+    char ganador = verificarGanador(tableroActual);
+
+    if(ganador == 'X'){
+        return 1;   // La IA gana
+    }
+    else if(ganador == 'O'){
+        return -1;  // El jugador humano gana
+    }
+
+    return 0;   // Si nadie gana, hay empate
+}
+
+template<class T>
+int minimaxRecursivo(NodoGeneral<T>* nodo, bool turnoIA, int alfa, int beta){
+
+    // Si es hoja → evaluar utilidad
+    if(nodo->esHoja()){
+        return funcionUtilidad(nodo->obtenerDato());
+    }
+
+    if(turnoIA){ // MAX
+
+        int mejorValor = -1000;
+
+        typename std::list< NodoGeneral<T>* >::iterator it;
+        for(it = nodo->obtenerDesc().begin(); it != nodo->obtenerDesc().end(); ++it){
+
+            int valor = minimaxRecursivo(*it, false, alfa, beta);
+            mejorValor = max(mejorValor, valor);
+
+            alfa = max(alfa, mejorValor);
+
+            if(beta <= alfa)
+                break; // PODA
+        }
+
+        return mejorValor;
+    }
+    else{ // MIN
+
+        int peorValor = 1000;
+
+        typename std::list< NodoGeneral<T>* >::iterator it;
+        for(it = nodo->obtenerDesc().begin(); it != nodo->obtenerDesc().end(); ++it){
+
+            int valor = minimaxRecursivo(*it, true, alfa, beta);
+            peorValor = min(peorValor, valor);
+
+            beta = min(beta, peorValor);
+
+            if(beta <= alfa)
+                break; // PODA
+        }
+
+        return peorValor;
+    }
+}
+
+template< class T >
+std::pair<int,int> minimaxPodaAlfaBeta(ArbolGeneral<T>& arbolDeJuego, bool turnoIA){
+
+    NodoGeneral<T>* raiz = arbolDeJuego.obtenerRaiz();
+
+    int alfa = -1000;
+    int beta = 1000;
+
+    int mejorValor = -1000;
+    std::pair<int,int> mejorJugada = {-1, -1};
+
+    // Evaluar cada hijo de la raíz
+    typename std::list< NodoGeneral<T>* >::iterator it;
+    for(it = raiz->obtenerDesc().begin(); it != raiz->obtenerDesc().end(); ++it){
+
+        int valor = minimaxRecursivo(*it, false, alfa, beta);
+
+        if(valor > mejorValor){
+            mejorValor = valor;
+            mejorJugada = (*it)->obtenerJugada(); 
+        }
+
+        alfa = std::max(alfa, mejorValor);
+
+        if(beta <= alfa)
+            break;
+    }
+
+    return mejorJugada;
+}
